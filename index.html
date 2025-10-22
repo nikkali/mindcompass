@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MindCompass</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Lora:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div>
+        <h1>MindCompass</h1>
+        <p class="subtitle">A discipleship-first Mind GPS for peaceful, Christ-centered focus.</p>
+      </div>
+      <div class="mode-toggle">
+        <label for="localMode">
+          <span class="mode-label">Local-only mode</span>
+          <input type="checkbox" id="localMode" />
+          <span class="toggle"></span>
+        </label>
+      </div>
+    </header>
+
+    <main>
+      <section class="card checkin" aria-labelledby="checkin-title">
+        <div class="card-header">
+          <h2 id="checkin-title">Quick Check-in</h2>
+          <p>How are you feeling right now?</p>
+        </div>
+        <form id="checkinForm">
+          <textarea id="checkinInput" rows="3" placeholder="Share what's on your heart..." required></textarea>
+          <div class="checkin-actions">
+            <button type="button" id="voiceButton" class="ghost">🎙️ Speak</button>
+            <button type="submit">Log feeling</button>
+          </div>
+        </form>
+        <p id="voiceStatus" class="voice-status" role="status" aria-live="polite"></p>
+        <div id="checkinInsight" class="insight" hidden>
+          <p class="insight-title">Mind pin placed</p>
+          <p class="insight-body"></p>
+        </div>
+      </section>
+
+      <section class="card compass" aria-labelledby="compass-title">
+        <div class="card-header">
+          <h2 id="compass-title">Mind Compass</h2>
+          <p>Notice where you are. Choose where you want to go.</p>
+        </div>
+        <div class="compass-visual" role="img" aria-label="Compass showing current emotional direction">
+          <div class="compass-circle">
+            <div class="compass-needle" id="compassNeedle"></div>
+          </div>
+          <ul class="compass-legend">
+            <li><span class="legend-color calm"></span>Peace</li>
+            <li><span class="legend-color truth"></span>Truth</li>
+            <li><span class="legend-color hope"></span>Hope</li>
+            <li><span class="legend-color joy"></span>Joy</li>
+            <li><span class="legend-color courage"></span>Courage</li>
+          </ul>
+        </div>
+        <div class="destination-selector">
+          <p class="selector-label">Select a destination with Jesus:</p>
+          <div class="destination-buttons" role="radiogroup" aria-label="Destinations">
+            <button type="button" class="destination" data-destination="peace" aria-pressed="false">Peace</button>
+            <button type="button" class="destination" data-destination="truth" aria-pressed="false">Truth</button>
+            <button type="button" class="destination" data-destination="hope" aria-pressed="false">Hope</button>
+            <button type="button" class="destination" data-destination="joy" aria-pressed="false">Joy</button>
+            <button type="button" class="destination" data-destination="courage" aria-pressed="false">Courage</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card route" aria-labelledby="route-title" hidden>
+        <div class="card-header">
+          <h2 id="route-title">Route with Jesus</h2>
+          <p>Move from where you are toward the destination you chose.</p>
+        </div>
+        <div class="route-body">
+          <div class="route-section scripture">
+            <h3>Scripture</h3>
+            <ul id="routeScripture"></ul>
+          </div>
+          <div class="route-section prayer">
+            <h3>Guided Prayer</h3>
+            <ol id="routePrayer"></ol>
+          </div>
+          <div class="route-section obedience">
+            <h3>Tiny Obedience</h3>
+            <div id="routeObedience" class="obedience-step"></div>
+          </div>
+        </div>
+        <div class="route-actions">
+          <button type="button" id="completeRoute">Mark route complete</button>
+        </div>
+      </section>
+
+      <section class="card journal" aria-labelledby="journal-title">
+        <div class="card-header">
+          <h2 id="journal-title">Journal</h2>
+          <p>Entries stay private &amp; encrypted locally.</p>
+        </div>
+        <div id="journalEntries" class="journal-entries" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>“Your word is a lamp to my feet and a light to my path.” — Psalm 119:105</p>
+    </footer>
+  </div>
+
+  <template id="journalEntryTemplate">
+    <article class="journal-entry">
+      <header>
+        <p class="entry-date"></p>
+        <p class="entry-destination"></p>
+      </header>
+      <p class="entry-feeling"></p>
+      <ul class="entry-steps"></ul>
+    </article>
+  </template>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>
