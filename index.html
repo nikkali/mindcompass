@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MindCompass – Solana Scalp Wallet Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <h1>MindCompass</h1>
+        <p class="tagline">
+          Build a repeatable workflow to discover, vet, score, and follow Solana scalp wallets.
+        </p>
+      </div>
+      <div class="actions">
+        <button id="exportButton" class="ghost-button">Export JSON</button>
+        <label class="ghost-button import-button">
+          Import JSON
+          <input type="file" id="importInput" accept="application/json" />
+        </label>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel">
+        <h2>1. Configure live data (optional)</h2>
+        <p class="panel-intro">
+          MindCompass works offline, but you can paste API keys to pull real trade activity
+          directly from Birdeye and Solscan when reviewing a wallet.
+        </p>
+        <form id="apiConfigForm" class="stack">
+          <label class="field">
+            <span>Birdeye API Key</span>
+            <input type="text" name="birdeye" placeholder="Paste x-api-key" />
+            <small>
+              Used for <code>/defi/wallet_trades</code>. Create a key under Birdeye &gt; Account &gt; API.
+            </small>
+          </label>
+          <label class="field">
+            <span>Solscan API Key</span>
+            <input type="text" name="solscan" placeholder="Optional" />
+            <small>
+              Used for <code>/account/transaction</code> lookups to enrich trade logs.
+            </small>
+          </label>
+          <button type="submit" class="primary">Save API configuration</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>2. Hunt &amp; seed your pipeline</h2>
+        <p class="panel-intro">
+          Capture candidate wallets you spot in Birdeye’s <strong>Find Trades</strong> feed. Use the
+          quick checklist to mark what you noticed before you promote them.
+        </p>
+        <form id="candidateForm" class="stack">
+          <div class="grid">
+            <label class="field">
+              <span>Wallet Address</span>
+              <input type="text" name="address" placeholder="solanaWallet123..." required />
+            </label>
+            <label class="field">
+              <span>Label / Alias</span>
+              <input type="text" name="label" placeholder="Optional nickname" />
+            </label>
+          </div>
+          <div class="grid">
+            <label class="field">
+              <span>Observed tokens</span>
+              <input
+                type="text"
+                name="tokens"
+                placeholder="e.g. BONK/USDC, JLP/USDC"
+              />
+            </label>
+            <label class="field">
+              <span>Main venues / routes</span>
+              <input type="text" name="venues" placeholder="e.g. Jupiter, Orca" />
+            </label>
+          </div>
+          <div class="grid">
+            <label class="field">
+              <span>Holding pattern</span>
+              <input type="text" name="holding" placeholder="Minutes? Hours?" />
+            </label>
+            <label class="field">
+              <span>Initial bucket</span>
+              <select name="category">
+                <option value="watch">Watch</option>
+                <option value="follow">Follow</option>
+              </select>
+            </label>
+          </div>
+          <label class="field">
+            <span>Notes from Birdeye / Solscan review</span>
+            <textarea
+              name="notes"
+              rows="2"
+              placeholder="Repeated BONK scalps within 30m window; trims quickly."
+            ></textarea>
+          </label>
+          <button type="submit" class="primary">Add wallet to MindCompass</button>
+        </form>
+
+        <div class="checklist">
+          <h3>Discovery checklist</h3>
+          <ul>
+            <li>Seen ≥2 trades in the last hour from Birdeye Find Trades feed.</li>
+            <li>Ticket size between $1K–$10K or &gt;$10K (avoid dust and outliers).</li>
+            <li>Repeats liquid pairs (not taxed or honeypot tokens).</li>
+            <li>Venues look consistent (Jupiter / Orca / Raydium rather than unknown routers).</li>
+            <li>Grab Solscan link and add to <strong>Watchlist</strong> for monitoring.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel wide">
+        <div class="panel-heading">
+          <h2>3. Verify, score &amp; promote</h2>
+          <div class="score-target">Promote wallets scoring <strong>≥7/10</strong>.</div>
+        </div>
+        <div id="statusBar" class="status-bar" role="status" aria-live="polite"></div>
+        <div class="board">
+          <section class="board-column" data-category="watch">
+            <header>
+              <h3>Watch (candidates)</h3>
+              <p>New finds. Track for a session or two before promoting.</p>
+            </header>
+            <div class="wallet-list"></div>
+          </section>
+          <section class="board-column" data-category="follow">
+            <header>
+              <h3>Follow (active scalp wallets)</h3>
+              <p>Proven wallets with alerts enabled and scoring ≥7.</p>
+            </header>
+            <div class="wallet-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>4. Keep your toolkit handy</h2>
+        <div class="tool-grid">
+          <article>
+            <h3>Birdeye quick links</h3>
+            <ul>
+              <li><a href="https://birdeye.so/solana/find-trades" target="_blank">Find Trades feed</a></li>
+              <li><a href="https://birdeye.so/solana" target="_blank">Solana dashboard</a></li>
+            </ul>
+          </article>
+          <article>
+            <h3>Solscan shortcuts</h3>
+            <ul>
+              <li><a href="https://solscan.io" target="_blank">Solscan explorer</a></li>
+              <li><a href="https://docs.solscan.io/solscan-account/manage-watchlist" target="_blank">Watchlist help</a></li>
+              <li><a href="https://docs.solscan.io/browsing-the-site/solscan-knowledge-base/tutorial" target="_blank">Notifications guide</a></li>
+            </ul>
+          </article>
+          <article>
+            <h3>Cross-chain intel</h3>
+            <ul>
+              <li><a href="https://www.nansen.ai" target="_blank">Nansen Smart Money</a></li>
+              <li><a href="https://www.arkhamintelligence.com" target="_blank">Arkham</a></li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <template id="walletTemplate">
+      <article class="wallet-card">
+        <header class="wallet-header">
+          <div class="wallet-identifiers">
+            <h4 class="wallet-label"></h4>
+            <div class="wallet-address"></div>
+          </div>
+          <div class="score-badge" title="Scorecard total"></div>
+        </header>
+        <div class="wallet-meta"></div>
+        <div class="quick-actions"></div>
+        <div class="checks"></div>
+        <div class="metrics"></div>
+        <details class="observations">
+          <summary>Notes &amp; observations</summary>
+          <ul class="observation-list"></ul>
+          <form class="observation-form">
+            <textarea name="text" rows="2" placeholder="E.g. exits losers fast"></textarea>
+            <button type="submit">Add observation</button>
+          </form>
+        </details>
+        <details class="trade-log">
+          <summary>Trade log</summary>
+          <ul class="trade-list"></ul>
+          <form class="trade-form">
+            <div class="grid">
+              <input type="text" name="token" placeholder="Token / pair" required />
+              <select name="side">
+                <option value="Buy">Buy</option>
+                <option value="Sell">Sell</option>
+              </select>
+              <input type="text" name="size" placeholder="Size ($)" />
+            </div>
+            <div class="grid">
+              <input type="datetime-local" name="timestamp" />
+              <input type="text" name="venue" placeholder="Venue" />
+            </div>
+            <textarea name="notes" rows="2" placeholder="Quick rationale"></textarea>
+            <button type="submit">Log trade</button>
+          </form>
+        </details>
+        <details class="alerts">
+          <summary>Follow-through checklist</summary>
+          <ul class="alert-list"></ul>
+          <button type="button" class="ghost-button" data-action="copyChecklist">
+            Copy follow checklist
+          </button>
+        </details>
+        <footer class="wallet-footer"></footer>
+      </article>
+    </template>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
